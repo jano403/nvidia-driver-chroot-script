@@ -14,17 +14,17 @@ apt install xserver-xorg -y
 # install wget
 apt install wget -y
 
-wget https://raw.githubusercontent.com/jano403/nvidia-driver-chroot-script/refs/heads/main/installComponents.sh
+wget https://raw.githubusercontent.com/jano403/nvidia-driver-chroot-script/refs/heads/main/installComponents470.sh
 
 cd /home/
 
 # IMPORTANT!!!! DRIVER MUST BE EXACTLY SAME AS HOST!!!
-wget https://us.download.nvidia.com/XFree86/Linux-x86_64/560.35.03/NVIDIA-Linux-x86_64-560.35.03.run
-sh NVIDIA-Linux-x86_64-560.35.03.run -x
+wget https://us.download.nvidia.com/XFree86/Linux-x86_64/470.256.02/NVIDIA-Linux-x86_64-470.256.02.run
+sh NVIDIA-Linux-x86_64-470.256.02.run -x
 
-cd NVIDIA-Linux-x86_64-560.35.03
+cd NVIDIA-Linux-x86_64-470.256.02
 
-mv /installComponents.sh ./
+mv /installComponents470.sh ./
 
 
 ################# OUTSIDE OF CHROOT!!!!
@@ -74,8 +74,8 @@ sudo mount --bind /run/user/1000/pulse /chroot/debian/run/user/1000/pulse
 apt install x11-xserver-utils -y
 apt install sudo mesa-utils -y
 # installing driver 
-chmod +x installComponents.sh
-./installComponents.sh
+chmod +x installComponents470.sh
+./installComponents470.sh
 
 # install deps for cuda
 apt install gcc make g++
@@ -83,6 +83,7 @@ apt install gcc make g++
 cd /home/
 
 wget https://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
+# this will segfault, accept and then we do something aand it wont segfault again
 sh cuda_10.2.89_440.33.01_linux.run --librarypath=/usr/local/cuda-10.2
 
 
@@ -91,13 +92,22 @@ sh cuda_10.2.89_440.33.01_linux.run --librarypath=/usr/local/cuda-10.2
 useradd -m john
 COPY .Xauthority from HOST's /home/USER_HOST to CHROOT's /home/john/
 
+chown john:john /home/john/.Xauthority
+chmod 600 /home/john/.Xauthority
+
+### OUTSIDE OF CHROOT START:
+xhost +local:
+### OUTSIDE OF CHROOT END
+
+
 su john
 glxgears
 nvidia-smi
 exit
-
-sh cuda_10.2.89_440.33.01_linux.run --librarypath=/usr/local/cuda-10.2
-
+# IMPORTANT!!
+mkdir -p /home/tmp
+apt install build-essential dkms
+sh cuda_10.2.89_440.33.01_linux.run --silent --toolkit --librarypath=/usr/local/cuda-10.2 --tmpdir=/home/tmp
 
 #DO IT LIKE THIS
 
@@ -145,7 +155,7 @@ cd llama.cpp/
 # patching llama.cpp
 git checkout 527e57cfd8a9a26bf622c0510c21c2508a24be26
 nano Makefile
-ctrl + w [-arch=native] (search this) and replace with -arch=compute_30
+ctrl + w [-arch=native] (search this WITHOUT THE [ ] THINGS) and replace with -arch=compute_30
 nano ggml-cuda.cu
 ctrl + w [CUBLAS_TF32_TENSOR_OP_MATH] replace the second one (inside the code, not inside the #define shit) with CUBLAS_TENSOR_OP_MATH
 

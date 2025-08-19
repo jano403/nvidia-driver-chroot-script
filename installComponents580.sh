@@ -9,11 +9,11 @@ cp libEGL.so.1.1.0 /usr/lib/x86_64-linux-gnu/
 cp libGLESv1_CM_nvidia.so.580.65.06 /usr/lib/x86_64-linux-gnu/
 cp libEGL_nvidia.so.580.65.06 /usr/lib/x86_64-linux-gnu/
 
-cp libnvidia-egl-wayland.so.1.1.13 /usr/lib/x86_64-linux-gnu/
+cp libnvidia-egl-wayland.so.1.1.19 /usr/lib/x86_64-linux-gnu/
 mkdir -p /usr/share/egl/egl_external_platform.d/
 cp 10_nvidia_wayland.json /usr/share/egl/egl_external_platform.d/
 
-cp libnvidia-egl-gbm.so.1.1.1 /usr/lib/x86_64-linux-gnu/
+cp libnvidia-egl-gbm.so.1.1.2 /usr/lib/x86_64-linux-gnu/
 mkdir -p /usr/share/egl/egl_external_platform.d/
 cp 15_nvidia_gbm.json /usr/share/egl/egl_external_platform.d/
 
